@@ -1,8 +1,7 @@
-import { ConfigService } from '@nestjs/config';
 export function resetPasswordOtpTemplate(
   otp: string,
   name?: string,
-  appName = new ConfigService().get<string>('PROJECT_NAME') ?? 'Our Platform',
+  appName = 'Our Platform',
 ): string {
   const greeting = name ? `Hi ${name},` : 'Hi,';
 

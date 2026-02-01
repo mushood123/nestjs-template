@@ -8,9 +8,15 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { RequestLoggerMiddleware } from './middleware/request-logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { MailerModule } from './mailer/mailer.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule, MailerModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    MailerModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

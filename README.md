@@ -1,98 +1,267 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Template
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-ready NestJS 11 starter template with TypeScript, Prisma ORM, standardized API responses, global error handling, and email support.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+- **Runtime:** Node.js with TypeScript 5.7 (ES2023, `nodenext` module resolution)
+- **Framework:** NestJS 11 on Express
+- **Database:** PostgreSQL with Prisma 7 ORM
+- **Validation:** class-validator + class-transformer
+- **Email:** Nodemailer
+- **Linting:** ESLint 9 (flat config) + Prettier
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Project Structure
 
-## Project setup
-
-```bash
-$ npm install
+```text
+src/
+├── main.ts                          # Application entry point
+├── app.module.ts                    # Root module
+├── app.controller.ts                # Health check endpoint
+├── app.service.ts                   # Health check service
+├── types/
+│   └── types.ts                     # Shared types (ResponseType<T>)
+├── interceptors/
+│   └── response.interceptor.ts      # Wraps all responses in ResponseType<T>
+├── filters/
+│   └── http-exception.filter.ts     # Global exception handler
+├── middleware/
+│   └── request-logger.middleware.ts  # Logs incoming requests and response times
+├── prisma/
+│   ├── prisma.module.ts             # Global Prisma module
+│   └── prisma.service.ts            # Prisma client with lifecycle hooks
+├── auth/
+│   ├── auth.module.ts               # Auth feature module
+│   ├── auth.controller.ts           # Auth endpoints
+│   ├── auth.service.ts              # Auth business logic
+│   └── dto/
+│       └── register.dto.ts          # Registration validation DTO
+├── mailer/
+│   ├── mailer.module.ts             # Email module
+│   └── mailer.service.ts            # Nodemailer transporter service
+├── common/
+│   ├── index.ts                     # Barrel exports
+│   ├── constants/
+│   │   └── error-codes.constants.ts # Centralized error code definitions
+│   ├── exceptions/
+│   │   ├── index.ts                 # Exception barrel exports
+│   │   ├── app.exception.ts         # Base exception (extends HttpException)
+│   │   ├── business.exception.ts    # 422 - Business logic violations
+│   │   ├── conflict.exception.ts    # 409 - Duplicate resources
+│   │   ├── entity-not-found.exception.ts  # 404 - Missing resources
+│   │   └── forbidden-operation.exception.ts # 403 - Permission denied
+│   └── mail-templates/
+│       ├── reset-password-otp.ts    # OTP email HTML template
+│       └── welcome-mail.ts          # Welcome email template (placeholder)
+└── generated/
+    └── prisma/                      # Auto-generated Prisma client (do not edit)
+prisma/
+├── schema.prisma                    # Database schema definition
+└── migrations/                      # Database migration history
 ```
 
-## Compile and run the project
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- PostgreSQL database
+
+### Installation
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+### Environment Variables
+
+Copy the example file and fill in the values:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cp .env.example .env
 ```
 
-## Deployment
+| Variable | Description | Example |
+| --- | --- | --- |
+| `PROJECT_NAME` | Application name (used in emails) | `nestjs-template` |
+| `PREFIX` | API route prefix | `api` |
+| `API_VERSION` | API version segment | `v1` |
+| `PORT` | Server port (required, app exits if missing) | `8000` |
+| `NODE_ENVIRONMENT` | Environment name for logging | `development` |
+| `NODE_ENV` | Controls log format and levels | `development` or `production` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/dbname` |
+| `NODE_MAILER_EMAIL` | Sender email address | `you@gmail.com` |
+| `NODE_MAILER_APP_PASSWORD` | Email service app password | `xxxx xxxx xxxx xxxx` |
+| `NODE_MAILER_PROVIDER` | Nodemailer transport service | `gmail` |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### Database Setup
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Generate the Prisma client and run migrations:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma generate
+npx prisma migrate dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Running the App
 
-## Resources
+```bash
+# Development (watch mode)
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+# Debug mode
+npm run start:debug
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Production
+npm run build
+npm run start:prod
+```
 
-## Support
+The app runs at `http://localhost:<PORT>/<PREFIX>/<API_VERSION>` (e.g., `http://localhost:8000/api/v1`).
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## API Response Format
 
-## Stay in touch
+All endpoints return a uniform response shape:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Success Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Operation successful",
+  "data": { },
+  "error": null,
+  "timestamp": "2026-02-02T12:00:00.000Z"
+}
+```
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "message": "Validation failed",
+  "data": null,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "details": {
+      "email": ["email must be an email"]
+    }
+  },
+  "timestamp": "2026-02-02T12:00:00.000Z"
+}
+```
+
+This is enforced globally by:
+
+- **ResponseInterceptor** - Wraps successful responses into `ResponseType<T>`
+- **HttpExceptionFilter** - Catches all exceptions and returns structured error responses
+
+Both are registered via DI tokens (`APP_INTERCEPTOR` / `APP_FILTER`) in `AppModule`.
+
+## Available Endpoints
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/health-check` | Health check (excluded from global prefix) |
+| `POST` | `/<prefix>/<version>/auth/register` | User registration |
+
+## Custom Exceptions
+
+The template provides a hierarchy of typed exceptions that carry error codes:
+
+| Exception | Status | Use Case |
+| --- | --- | --- |
+| `AppException` | 500 (default) | Base exception with error code and context |
+| `BusinessException` | 422 | Business rule violations |
+| `EntityNotFoundException` | 404 | Resource not found |
+| `ConflictException` | 409 | Duplicate resource conflicts |
+| `ForbiddenOperationException` | 403 | Permission denied |
+
+Usage:
+
+```typescript
+throw new EntityNotFoundException('USER_NOT_FOUND');
+throw new ConflictException('DUPLICATE_EMAIL');
+throw new BusinessException('INVALID_CREDENTIALS', 'Custom message here');
+```
+
+Error codes are defined in `src/common/constants/error-codes.constants.ts`.
+
+## Database
+
+The template uses Prisma with PostgreSQL. The `PrismaService` is registered globally via `PrismaModule`, so it can be injected into any service:
+
+```typescript
+@Injectable()
+export class UsersService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  findAll() {
+    return this.prisma.user.findMany();
+  }
+}
+```
+
+### Schema
+
+The initial schema includes a `User` model:
+
+```prisma
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  first_name String
+  last_name  String
+  password   String
+  createdAt  DateTime @default(now())
+}
+```
+
+### Migrations
+
+```bash
+# Create a new migration after schema changes
+npx prisma migrate dev --name <migration_name>
+
+# Apply migrations in production
+npx prisma migrate deploy
+
+# Reset database (destructive)
+npx prisma migrate reset
+```
+
+## Logging
+
+- **Development** (`NODE_ENV !== 'production'`): Colorized console output with all log levels (`log`, `error`, `warn`, `debug`, `verbose`)
+- **Production** (`NODE_ENV === 'production'`): JSON format with `log`, `error`, `warn` only
+
+Request logging middleware logs every incoming request and its response time automatically.
+
+## Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm run start:dev` | Development with watch mode |
+| `npm run start:debug` | Debug mode with watch |
+| `npm run start:prod` | Run compiled output |
+| `npm test` | Run unit tests |
+| `npm run test:watch` | Tests in watch mode |
+| `npm run test:cov` | Tests with coverage report |
+| `npm run test:e2e` | End-to-end tests |
+| `npm run lint` | ESLint with auto-fix |
+| `npm run format` | Prettier formatting |
+
+## Code Style
+
+- **Single quotes**, **trailing commas** everywhere
+- `@typescript-eslint/no-explicit-any` is disabled
+- Floating promises and unsafe arguments produce warnings
+- Run `npm run lint` and `npm run format` before committing
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+[UNLICENSED](package.json)
